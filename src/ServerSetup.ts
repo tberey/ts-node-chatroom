@@ -57,7 +57,7 @@ export class ServerSetup {
                 maxAge: 36000000,
                 httpOnly: false
               },
-            secret: "53CR37-535510N-1993",
+            secret: process.env['SESSION_SECRET'] || 'Error: No session secret set in .env file.',
             saveUninitialized: true,
             resave: true
         });
