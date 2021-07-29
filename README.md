@@ -134,8 +134,14 @@ For help or guidance in downloading and running the application, see the followi
 <br>
 
 ### Screenshots
-Shot#1<br>
-![Screenshot#1](https://github.com/tberey/ts-node-chatroom/blob/development/screenshots/shot1.png?raw=true)
+Chatroom (Logged-in):<br>
+![Screenshot#1](https://github.com/tberey/ts-node-chatroom/blob/development/screenshots/chatroom-logged-in.png?raw=true)<br><br>
+
+Landing Page (Register and/or Login):<br>
+![Screenshot#1](https://github.com/tberey/ts-node-chatroom/blob/development/screenshots/landing-page.png?raw=true)<br><br>
+
+Multiple Users (All Logged-in):<br>
+![Screenshot#1](https://github.com/tberey/ts-node-chatroom/blob/development/screenshots/chatroom-multiple-users.png?raw=true)
 
 <br><hr><br>
 
