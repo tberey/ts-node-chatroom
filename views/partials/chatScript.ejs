@@ -1,0 +1,99 @@
+<!-- views/partials/chatScript.ejs - Client Side Scripting (Chatroom Page) -->    
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script>
+<script> 
+    $(() => {
+        // Declare DOM variables.
+        let chatroom = $('#chatroom'); // Display data element.
+        let message = $('#message'); // Input text field.
+        let userList = $('#tableStart'); // Display data element.
+        let feedback = $('#feedback'); // Display data element.
+
+        let currentPass = $('#current-password'); // Input text field.
+        let newPass = $('#new-password'); // Input text field.
+        let confNewPass = $('#confirm-new-password'); // Input text field.
+        let msgLog = $('#msglog'); // Display data element.
+
+        const socket = io.connect($('#url').val(), {path:'/chat'}); // Set socket connection, and path.
+
+        // Listen for change password button click, in order to update a user's password, by PUT request.
+        $('#submit-password').click(() => {
+            $.ajax({
+                url:'changePassword',
+                method:'PUT',
+                data: { // Data to be sent in request body.
+                        currentPassword: currentPass.val(),
+                        newPassword: newPass.val(),
+                        confPassword: confNewPass.val()
+                    },
+                success:(response) => { // Successful request, display returned server message, hide menu.
+                    msgLog.html(response);
+                    $('#update-password').css('display','none');
+                },
+                error:(err) => { // Unsuccessful request, display returned server message.
+                    msgLog.html(err.responseText);
+                },
+                complete:() => { // Clear input fields, timeout info text, and set view, after capturing data and completing request.
+                    $('#accountSection').scrollTop($('#accountSection').prop('scrollHeight'));
+                    setTimeout(() => msgLog.html(''), 8000);
+                    currentPass.val('');
+                    newPass.val('');
+                    confNewPass.val('');
+                }
+            });
+        });        
+
+        // Listen for a click on the Close Account button, in the Account section of the client page chatroom. Delete account and logout/redirect client.
+        $('#submit-delete').click(() => {
+            $.ajax({
+                url:'delete',
+                method:'DELETE',
+                complete:(response) => {
+                    socket.emit('disconnect');
+                    location.pathname = response.responseText;
+                }
+            });
+        });
+
+        // Emit new message signal, to update server of message to broadcast/emit to connected sockets.
+        $('#submit-message').click(() => {
+            socket.emit('newMessageA', {message : message.val()});
+            message.val('');
+        });
+
+        // Bind 'message' DOM Object to the 'keypress' event, to emit the user is typing signal. (I.e. When there's a keypress event on input field, emit the signal).
+        message.bind("keypress", () => socket.emit('typingA'));
+
+        // Get existing messages.
+        socket.emit('allMessages');
+
+        // Listen for the user list items to be emitted by server on connection, and append to html.
+        socket.on('userListItem', (data) => userList.append(data));
+
+        // Listen for delete list signal to clear userl list in the html, in prep for a new list emitted. Append received data to html, and scroll view.
+        socket.on('deleteList', (data) => {
+            userList.html('');
+            if (data) chatroom.append(data);
+            $('#chatroom').scrollTop($('#chatroom').prop('scrollHeight'));
+        });
+
+        // Listen the full message list being retuned. Append any received messages to DOM, and auto-scroll to bottom of element.
+        socket.on('msgSetItem', (data) => {
+            chatroom.append(data);
+            $("#chatroom").animate({scrollTop:$("#chatroom")[0].scrollHeight}, 80);
+        });
+
+        // Listen for any new messages being broadcast/emitted, and append into page DOM. Auto-scroll view.
+        socket.on('newMessageB', (data) => {
+            chatroom.append(data);
+            $('#chatroom').scrollTop($('#chatroom').prop('scrollHeight'));
+        });
+
+        // Listen for a user typing signal, to build into Page DOM a message relaying who is typing. Set timer to remove element after 2 seconds.
+        socket.on('typingB', (data) => {
+            if (feedback.html().indexOf(`${data.user}`) == -1) {
+                feedback.append(data.message);
+                setTimeout(() => {feedback.html('');}, 1900);
+            }
+        });
+    });
+</script>
