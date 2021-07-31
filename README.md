@@ -155,6 +155,7 @@ Below is the refined and confirmed roadmap, that has been planned for completion
 |:---|:---|:---|:---|
 | <i>Bug#1</i> | <i>Bug details...</i> | <i>0.0.1</i> | <i>example#1</i> |
 | <i>Feature#4</i> | <i>Feature details...</i> |   | <i>example#2</i> |
+| Automatic Database Startup & Configuration | Auto-build database and table(s), and auto-populate data or test account (seeding). | | |
 
 <br><hr><br>
 
