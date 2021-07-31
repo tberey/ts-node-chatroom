@@ -80,7 +80,7 @@ A Chatroom Application with User Authentication & Accounts. Login & Register to 
 * [Typescript](https://www.typescriptlang.org/)
 * [NodeJS](https://nodejs.org/en/)
 * [Scoket.io](https://socket.io/)
-* [ExpressJS](https://expressjs.com/)
+* [Express](https://expressjs.com/)
 * [MySQL](https://www.mysql.com/)
 * [EJS](https://ejs.co/)
 * [Rollbar](https://rollbar.com/)
@@ -134,8 +134,14 @@ For help or guidance in downloading and running the application, see the followi
 <br>
 
 ### Screenshots
-Shot#1<br>
-![Screenshot#1](https://github.com/tberey/ts-node-chatroom/blob/development/screenshots/shot1.png?raw=true)
+Chatroom (Logged-in):<br>
+![Screenshot#1](https://github.com/tberey/ts-node-chatroom/blob/development/screenshots/chatroom-logged-in.png?raw=true)<br><br>
+
+Landing Page (Register and/or Login):<br>
+![Screenshot#1](https://github.com/tberey/ts-node-chatroom/blob/development/screenshots/landing-page.png?raw=true)<br><br>
+
+Multiple Users (All Logged-in):<br>
+![Screenshot#1](https://github.com/tberey/ts-node-chatroom/blob/development/screenshots/chatroom-multiple-users.png?raw=true)
 
 <br><hr><br>
 
@@ -149,6 +155,7 @@ Below is the refined and confirmed roadmap, that has been planned for completion
 |:---|:---|:---|:---|
 | <i>Bug#1</i> | <i>Bug details...</i> | <i>0.0.1</i> | <i>example#1</i> |
 | <i>Feature#4</i> | <i>Feature details...</i> |   | <i>example#2</i> |
+| Automatic Database Startup & Configuration | Auto-build database and table(s), and auto-populate data or test account (seeding). | | |
 
 <br><hr><br>
 
@@ -179,6 +186,7 @@ Below is the refined and confirmed roadmap, that has been planned for completion
 |Version 2.2.0 | [2020-05-20] | <ul><li>Final EJS Update & Cleanup</li><li>Further client-side Scripting restructure & tidy-up.</li><li>CSS stylesheets consolidation (2=>1).</li><li>Comments rewriting and tidy.</li><li>Final checkovers and tidy up + Testing.</li><li>Update README.md</li></ul>|
 |Version 2.2.0 | [2020-05-20] | <ul><li>Renaming and descriptions editing.</li><li>Update README.md</li></ul>|
 |Version 3.0.0 | [2021-07-29] | <ul><li>Project-wide update, reformat and clean-up, including modules.</li><li>Update README.md</li></ul>|
+|Version 3.0.1 | [2021-07-31] | <ul><li>Updates to session management implementation, plus a new interface.</li><li>Updates to database interactivity and infrastructure, creating new seperate class.</li><li>Update README.md</li></ul>|
 
 <br><hr><br>
 

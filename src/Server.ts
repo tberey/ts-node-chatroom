@@ -1,6 +1,6 @@
 /* eslint-disable */
 import { ServerSetup } from "./ServerSetup"
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import bcrypt from "bcrypt";
 
 export class Server extends ServerSetup {
@@ -32,19 +32,22 @@ export class Server extends ServerSetup {
         
 
         // POST Method for the request made to login, with the details supplied by user queried against the sql db. Set session data and redirect to chat.
-        this.router.post('/login', (req:Request, res:Response):void => {
+        this.router.post('/login', (req:Request, res:Response, next: NextFunction):void => {
 
             // Capture username and password, supplied with request body from client.
             const username = req.body.username;
             const password = req.body.password;
 
             // Error checking for both username/password combo and return message, else continue with request.
-            if (!username && !password) res.status(422).render('index', {msg: `Please enter both a Username and Password.`});
+            if (!username && !password) {
+                res.status(422).render('index', {msg: `Please enter both a Username and Password.`});
+                return next();
+            }
             else if (username && password) {
 
                 // Define db sql script to pass in as an argument with the db query function call, to find user attempting to login.
                 const query = `SELECT * FROM users WHERE username = '${username}'`;
-                this.dbConnection.query(query, (err:Error, results:any /*:Array<object>*/):void => {
+                this.db.dbConnection.query(query, (err:Error, results:any /*:Array<object>*/):void => {
 
                     // DB Query Error handling. Return error and bad status.
                     if (err) res.status(500).render('index', {msg: err});
@@ -84,6 +87,7 @@ export class Server extends ServerSetup {
                     }
                 });
             }
+            next();
         });
 
 
@@ -103,7 +107,7 @@ export class Server extends ServerSetup {
 
                 // Define our db sql script to check if the submitted username already exists. Query passed in as an argument with the db query function call.
                 const query = `SELECT * FROM users WHERE username = '${username}'`; // Query db for specific username.
-                this.dbConnection.query(query, (err:Error, results:Array<object>) => {
+                this.db.dbConnection.query(query, (err:Error, results:Array<object>) => {
                     
                     // DB Query error handling. Return error and bad status.
                     if (err) res.status(500).render('index', {msg: err});
@@ -122,7 +126,7 @@ export class Server extends ServerSetup {
 
                             // Define db query and call function to add new row/user into sql db.
                             const query = `INSERT INTO users (username, password) VALUES ('${username}','${hash}');`;
-                            this.dbConnection.query(query, (err:Error) => {
+                            this.db.dbConnection.query(query, (err:Error) => {
                                 
                                 // DB Query error handling. Return error and bad status.
                                 if (err) res.status(500).render('index', {msg: err});
@@ -134,7 +138,7 @@ export class Server extends ServerSetup {
                                 
                                 // Define db query and pass into called function to return the ID of the last inputted user, from this connection specifically.
                                 const query = `SELECT LAST_INSERT_ID();`;
-                                this.dbConnection.query(query, (err:Error, result:any) => {
+                                this.db.dbConnection.query(query, (err:Error, result:any) => {
                                     
                                     // DB Query error handling. Return error and bad status.
                                     if (err) res.status(500).render('index', {msg: err});
@@ -177,7 +181,7 @@ export class Server extends ServerSetup {
 
                 // Define our db sql script, to find the username supplied, and pass in as an argument with db query call.
                 const query = `SELECT * FROM users WHERE username = '${newUsername}'`;
-                this.dbConnection.query(query, (err:Error, results:Array<object>) => {
+                this.db.dbConnection.query(query, (err:Error, results:Array<object>) => {
                     
                     // DB Query error handling. Return error and bad status.
                     if (err) res.status(500).send(err);
@@ -189,7 +193,7 @@ export class Server extends ServerSetup {
                         
                         // Query to edit the record, contrained by user's current username, with the new username.
                         const query = `UPDATE users SET username='${newUsername}' WHERE username='${req.session.username}';`;
-                        this.dbConnection.query(query, (err:Error) => {
+                        this.db.dbConnection.query(query, (err:Error) => {
 
                             // DB Query error handling. Return error and bad status.
                             if (err) res.status(500).send(err);
@@ -226,6 +230,11 @@ export class Server extends ServerSetup {
                 req.session.save((err:Error)=> {if (err) throw err});
                 res.status(200).redirect('/');
             }
+            
+            req.session.destroy((err:Error) => {
+                this.rollbarLogger.rollbarError(err);
+                this.txtLogger.writeToLogFile(`Error reported to Rollbar: ${err}`);
+            });
         });
     }
 
@@ -250,7 +259,7 @@ export class Server extends ServerSetup {
                 
                 // Define our db sql script to isolate user's password. Pass in query as an argument with the db query function call.
                 const query = `SELECT password FROM users WHERE username = '${req.session.username}'`;
-                this.dbConnection.query(query, (err:Error, results:any) => {
+                this.db.dbConnection.query(query, (err:Error, results:any) => {
                     
                     // DB Query error handling. Return error and bad status.
                     if (err) res.status(500).send(err); // Error handling. Return error and bad status.
@@ -276,7 +285,7 @@ export class Server extends ServerSetup {
                                 
                                 // Define sql script to update current db hashed password with new hashed password. Pass into query function call to execute.
                                 const query = `UPDATE users SET password='${hash}' WHERE username='${req.session.username}';`;
-                                this.dbConnection.query(query, (err:Error) => {
+                                this.db.dbConnection.query(query, (err:Error) => {
 
                                     // DB Query error handling. Return error and bad status.
                                     if (err) res.status(500).send(err);
@@ -305,7 +314,7 @@ export class Server extends ServerSetup {
 
                 // Define delete query of user, for db query call argument.
                 const query = `DELETE FROM users WHERE username='${req.session.username}';`;
-                this.dbConnection.query(query, (err:Error) => {
+                this.db.dbConnection.query(query, (err:Error) => {
 
                     // DB Query error handling. Return error and bad status.
                     if (err) res.status(500).send(err);

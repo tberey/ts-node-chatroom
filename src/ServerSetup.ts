@@ -1,17 +1,28 @@
 import { Rollbar } from './services/Rollbar';
 import { SimpleTxtLogger } from 'simple-txt-logger';
 import { HelperService } from './services/HelperService';
+import { Database } from './services/Database';
 import express, { Express, Router } from 'express';
 import dotenv from 'dotenv';
 import http from 'http';
-import mysql, { Pool } from 'mysql';
 import SocketIOServer from "socket.io";
 import session from "express-session";
+import cookieParser from "cookie-parser";
+
+declare module 'express-session' {
+    interface SessionData {
+        //username: { [key: string]: any };
+        username: string | null;
+        password: string | null;
+        uid: string | null;
+        loggedin: boolean;
+    }
+}
 
 export class ServerSetup {
 
-    protected io:SocketIOServer.Server;
-    private sessionMiddleware:express.RequestHandler;
+    protected io: SocketIOServer.Server;
+    private sessionMiddleware: express.RequestHandler;
 
     static appName = 'Chatroom';
     private port: string;
@@ -19,12 +30,10 @@ export class ServerSetup {
     private server: http.Server;
     protected router: Router;
     private app: Express;
+    protected db: Database;
 
     protected txtLogger: SimpleTxtLogger;
     protected rollbarLogger: Rollbar;
-
-    protected dbConnection: Pool;
-    //private dbTable: string;
 
     protected constructor(port = '3030', hostname = '127.0.0.1') {
         dotenv.config();
@@ -41,23 +50,15 @@ export class ServerSetup {
         this.app = express();
         this.server = new http.Server(this.app);
         this.io = SocketIOServer(this.server, {'path': '/chat'}); // send to io class?
-
-        //this.dbTable = process.env['DB_TABLE'] || 'Error: Missing Table in .env';
-        this.dbConnection = mysql.createPool({
-            connectionLimit: 10,
-            'host': process.env['DB_HOST'],
-            'user': process.env['DB_USER'],
-            'password': process.env['DB_PASSWORD'],
-            'database': process.env['DB_NAME']
-        });
+        this.db = new Database(this.txtLogger, this.rollbarLogger);
 
         this.sessionMiddleware = session({
-            //store: new FileStore(),
+            //store: new FileStore(), //store some session data in a db?
             cookie: {
                 maxAge: 36000000,
                 httpOnly: false
               },
-            secret: "53CR37-535510N-1993",
+            secret: process.env['SESSION_SECRET'] || 'Error: No session secret set in .env file.',
             saveUninitialized: true,
             resave: true
         });
@@ -68,16 +69,18 @@ export class ServerSetup {
 
     private serverConfig(): void {
         // Express middleware private session data/setup.
+        this.app.use(this.sessionMiddleware);
         this.io.use((socket, next) => {
             this.sessionMiddleware(socket.request, socket.request.res, next);
         });
-        this.app.use(this.sessionMiddleware);
 
         this.app.use(express.urlencoded({extended: true}));
         this.app.use(express.json());
+        this.app.use(cookieParser());
         this.app.use(express.static('public'));
         this.app.set('view engine', 'ejs');
         this.app.use("/", this.router);
+
         this.txtLogger.writeToLogFile('Configured Server.');
     }
 
@@ -88,15 +91,5 @@ export class ServerSetup {
     // Accessor needed for testing only. So property 'this.app' can remain private.
     public appAccessor(app = this.app): Express {
         return app;
-    }
-
-    protected dbclose(): void {
-        this.dbConnection.end((err) => {
-            if (err) {
-                this.rollbarLogger.rollbarError(err);
-                this.txtLogger.writeToLogFile(`Error reported to Rollbar: ${err}`);
-            }
-        });
-        this.txtLogger.writeToLogFile('Database Disconnected.');
     }
 }
