@@ -1,5 +1,6 @@
-import { Server } from "./Server";
-import { Socket } from "socket.io";
+import SocketIOServer, { Socket } from "socket.io";
+import { Server } from 'http';
+import { RequestHandler } from 'express';
  
 // Define our data profiles as interfaces.
 interface IUser {
@@ -13,15 +14,19 @@ interface IMessage {
 }
 
 // Socket.io server integration handling class. An instance of this is a fully functioning sockets server, which uses the ServerRouter parent classes.
-export class SocketsServer extends Server {
-    
-    constructor(port?: string, hostname?: string) {
-        super(port, hostname);
+export class SocketsServer {
+
+    private io: SocketIOServer.Server;
+
+    constructor(server: Server, sessionMiddleware: RequestHandler) {
+        this.io = SocketIOServer(server, {'path': '/chat'});
+        this.io.use((socket, next) => sessionMiddleware(socket.request, socket.request.res, next));
+
         this.socketHandler();
     }
 
     // Method to handle all socket communication, incoming and outgoing.
-    private socketHandler():void {
+    private socketHandler(): void {
 
         // Create new Sets (ES6) to hold all chatroom messages history, and connected users list, for a session.
         const messageSet: Set<IMessage> = new Set();
@@ -41,7 +46,10 @@ export class SocketsServer extends Server {
             });
 
             // Disconnect user and break out, if the user is not logged in.
-            if (!(socket.request.session.loggedin)) {socket.disconnect();return;}
+            if (!(socket.request.session.loggedin)) {
+                socket.disconnect();
+                return;
+            }
             
             // Create a new user, using stored request session properties.
             const user:IUser = { uniqueID: socket.request.session.uid, name: socket.request.session.username };
@@ -126,5 +134,10 @@ export class SocketsServer extends Server {
                 });
             });
         });
+    }
+
+    public close(): void {
+        this.io.sockets.emit('disconnect');
+        this.io.close();
     }
 }

@@ -1,7 +1,7 @@
 import { Rollbar } from './Rollbar';
 import { SimpleTxtLogger } from 'simple-txt-logger';
 import { HelperService } from './HelperService';
-import mysql, { Pool } from 'mysql';
+import mysql, { Pool, Query } from 'mysql';
 
 export interface QueryReturnData extends Object {
     "Ticker_Symbol": string,
@@ -44,15 +44,20 @@ export class Database {
         this.txtLogger.writeToLogFile('Database Disconnected.');
     }
 
-    public selectAll(): void {
-        const query = `SELECT * FROM ${this.dbTable} LIMIT 5`;
-        this.dbConnection.query(query, (err, results): void => {
+    public login(username: string): Query | number {
+        const query = `SELECT * FROM ${this.dbTable} WHERE username = '${username}'`;
+
+        return this.dbConnection.query(query, (err, results): number | Query => {
+
             if (err) {
                 this.rollbarLogger.rollbarError(err);
-                return this.txtLogger.writeToLogFile(`Error reported to Rollbar: ${err}`);
+                this.txtLogger.writeToLogFile(`Error reported to Rollbar: ${err}`);
+                const statusCode = 500;
+                return statusCode;
             }
 
             this.txtLogger.writeToLogFile(`DB Results: ${results}`);
+            return results;
         });
     }
 }

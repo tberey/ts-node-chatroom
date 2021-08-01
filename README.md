@@ -156,6 +156,9 @@ Below is the refined and confirmed roadmap, that has been planned for completion
 | <i>Bug#1</i> | <i>Bug details...</i> | <i>0.0.1</i> | <i>example#1</i> |
 | <i>Feature#4</i> | <i>Feature details...</i> |   | <i>example#2</i> |
 | Automatic Database Startup & Configuration | Auto-build database and table(s), and auto-populate data or test account (seeding). | | |
+| Fix ID=0, On Register and Login | User's ID is shown as 0, but only when registering and logging in for first time, (relog fixes, & no DB issues seen). | | |
+| Remove SQL From Server.ts | Remove any sql/db related stuff from Server.ts class and add into Database.ts class. | | |
+| Add Promises | Add Promises etc. | | |
 
 <br><hr><br>
 
@@ -187,6 +190,7 @@ Below is the refined and confirmed roadmap, that has been planned for completion
 |Version 2.2.0 | [2020-05-20] | <ul><li>Renaming and descriptions editing.</li><li>Update README.md</li></ul>|
 |Version 3.0.0 | [2021-07-29] | <ul><li>Project-wide update, reformat and clean-up, including modules.</li><li>Update README.md</li></ul>|
 |Version 3.0.1 | [2021-07-31] | <ul><li>Updates to session management implementation, plus a new interface.</li><li>Updates to database interactivity and infrastructure, creating new seperate class.</li><li>Update README.md</li></ul>|
+|Version 3.0.2 | [2021-08-01] | <ul><li>Differentiate SocketServer further, into it's own service class, rather than a parent class of the server infrastructure.</li><li>Minor updates to Database class and implementation.</li><li>Update README.md</li></ul>|
 
 <br><hr><br>
 

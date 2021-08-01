@@ -1,4 +1,4 @@
-import { SocketsServer } from "./SocketsServer";
+import { Server } from "./Server";
 
-const server:SocketsServer = new SocketsServer();
+const server: Server = new Server();
 server;

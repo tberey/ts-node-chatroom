@@ -2,12 +2,12 @@ import { Rollbar } from './services/Rollbar';
 import { SimpleTxtLogger } from 'simple-txt-logger';
 import { HelperService } from './services/HelperService';
 import { Database } from './services/Database';
-import express, { Express, Router } from 'express';
+import express, { Express, Router, RequestHandler } from 'express';
 import dotenv from 'dotenv';
 import http from 'http';
-import SocketIOServer from "socket.io";
 import session from "express-session";
 import cookieParser from "cookie-parser";
+import { SocketsServer } from './SocketsServer';
 
 declare module 'express-session' {
     interface SessionData {
@@ -21,15 +21,15 @@ declare module 'express-session' {
 
 export class ServerSetup {
 
-    protected io: SocketIOServer.Server;
-    private sessionMiddleware: express.RequestHandler;
-
     static appName = 'Chatroom';
     private port: string;
     private hostname: string;
+
+    private sessionMiddleware: RequestHandler;
     private server: http.Server;
     protected router: Router;
     private app: Express;
+    private socketServer: SocketsServer
     protected db: Database;
 
     protected txtLogger: SimpleTxtLogger;
@@ -46,12 +46,6 @@ export class ServerSetup {
 
         this.txtLogger.writeToLogFile('...::SERVER-SIDE APPLICATION STARTING::...');
 
-        this.router = express.Router();
-        this.app = express();
-        this.server = new http.Server(this.app);
-        this.io = SocketIOServer(this.server, {'path': '/chat'}); // send to io class?
-        this.db = new Database(this.txtLogger, this.rollbarLogger);
-
         this.sessionMiddleware = session({
             //store: new FileStore(), //store some session data in a db?
             cookie: {
@@ -63,16 +57,18 @@ export class ServerSetup {
             resave: true
         });
 
+        this.router = express.Router();
+        this.app = express();
+        this.server = new http.Server(this.app);
+        this.socketServer = new SocketsServer(this.server, this.sessionMiddleware);
+        this.db = new Database(this.txtLogger, this.rollbarLogger);
+
         this.serverConfig();
         this.serverStart();
     }
 
     private serverConfig(): void {
-        // Express middleware private session data/setup.
         this.app.use(this.sessionMiddleware);
-        this.io.use((socket, next) => {
-            this.sessionMiddleware(socket.request, socket.request.res, next);
-        });
 
         this.app.use(express.urlencoded({extended: true}));
         this.app.use(express.json());
@@ -86,6 +82,10 @@ export class ServerSetup {
 
     private serverStart(): void {
         this.server.listen(parseInt(this.port), this.hostname, () => this.txtLogger.writeToLogFile(`Started HTTP Server: http://${this.hostname}:${this.port}`));
+    }
+
+    public closeSocketServer(): void {
+        this.socketServer.close();
     }
 
     // Accessor needed for testing only. So property 'this.app' can remain private.
