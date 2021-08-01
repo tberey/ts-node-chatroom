@@ -7,7 +7,7 @@ import dotenv from 'dotenv';
 import http from 'http';
 import session from "express-session";
 import cookieParser from "cookie-parser";
-import { SocketsServer } from './SocketsServer';
+import { SocketsServer } from './services/SocketsServer';
 
 declare module 'express-session' {
     interface SessionData {
