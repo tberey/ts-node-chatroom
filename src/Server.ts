@@ -54,10 +54,10 @@ export class Server extends ServerSetup {
                     if (!results.length) res.status(401).render('index', {msg: `Incorrect Username or Password entered. Please try again.`});
                     else if (results.length) {
                         
-                        // Unhash found user's password and compare with inputted password.
+                        // Un-hash found user's password and compare with inputted password.
                         bcrypt.compare(password, results[0].password, (err:Error, result:boolean):Response|void => {
 
-                            // bcrypt unhashing error handling. Return error and bad status.
+                            // bcrypt un-hashing error handling. Return error and bad status.
                             if (err) res.status(500).render('index', {msg: err});
                             if (err) throw err;
 
@@ -96,7 +96,7 @@ export class Server extends ServerSetup {
             const password = req.body.password;
             const confPassword = req.body.confPassword;
             
-            // Check for missing or incorrect data, sent with request, and retunr bad response and error message. Else continue with request to register new user.
+            // Check for missing or incorrect data, sent with request, and return bad response and error message. Else continue with request to register new user.
             if (username.length > 30) res.status(422).render('index', {msg: `Username is too long (Max: 30 Characters). Enter a new username.`});
             else if (password !== confPassword) res.status(422).render('index', {msg: `Your passwords entered did not match. Try again.`});
             else if (!username && !password) res.status(422).render('index', {msg: `Please enter both a Username and Password, and confirm the new password.`});
@@ -145,7 +145,7 @@ export class Server extends ServerSetup {
                                     req.session.uid = `${result[0]['LAST_INSERT_ID()']}`;
                                     req.session.save((err:Error)=> {if (err) throw err});
 
-                                    // Render and serve chatroom client page on successful register/login, with success repsonse. Supply ejs variables.
+                                    // Render and serve chatroom client page on successful register/login, with success response. Supply ejs variables.
                                     res.status(201).render('chatroom', {
                                         data: {
                                             username: req.session.username,
@@ -184,11 +184,11 @@ export class Server extends ServerSetup {
                     if (err) res.status(500).send(err);
                     if (err) throw err;
                     
-                    // If query results found username, return bad status and message. Else continue with request and ammend username in db.
+                    // If query results found username, return bad status and message. Else continue with request and amend username in db.
                     if (results.length) res.status(409).send(`Username already exists. Please try another.`);
                     else if (!(results.length)) {
                         
-                        // Query to edit the record, contrained by user's current username, with the new username.
+                        // Query to edit the record, constrained by user's current username, with the new username.
                         const query = `UPDATE ${process.env['DB_TABLE']} SET username='${newUsername}' WHERE username='${req.session.username}';`;
                         this.db.dbConnection.query(query, (err:Error) => {
 
@@ -200,7 +200,7 @@ export class Server extends ServerSetup {
                             req.session.username = newUsername;
                             req.session.save((err:Error)=> {if (err) throw err});
 
-                            // Successful request and so send back successful status, and rerender page with server message/new username.
+                            // Successful request and so send back successful status, and render page with server message/new username.
                             res.status(201).render('chatroom', {
                                 data: {
                                     username: req.session.username,
@@ -239,7 +239,7 @@ export class Server extends ServerSetup {
     private putRequests():void {
 
 
-        // PUT Method for request made to change current password, with the new password supplied by input, and ammend in the sql db.
+        // PUT Method for request made to change current password, with the new password supplied by input, and amend in the sql db.
         this.router.put('/changePassword', (req:Request, res:Response):void => {
 
             if (!(req.session.loggedin)) return; // Error handling: do not carry out request (and break out of function), if user is not logged in.
@@ -249,7 +249,7 @@ export class Server extends ServerSetup {
             const currentPassword = req.body.currentPassword;
             const confPassword = req.body.confPassword;
             
-            // Check for complete and correct request data, to carry out operation. Otherwise return a bad responseand status, with message.
+            // Check for complete and correct request data, to carry out operation. Otherwise return a bad response and status, with message.
             if (!newPassword || !currentPassword) res.status(422).send(`Please enter both your current and new password.`);
             else if (newPassword !== confPassword) res.status(422).send(`The new passwords you entered do not match each other. Please try again.`);
             else if (newPassword && currentPassword) {
@@ -265,7 +265,7 @@ export class Server extends ServerSetup {
                     // Check returned hashed db password matches inputted current password.
                     bcrypt.compare(currentPassword, results[0].password, (err:Error, result:boolean) => {
 
-                        // bcrypt unhashing error handling. Return error and bad status.
+                        // bcrypt un-hashing error handling. Return error and bad status.
                         if (err) res.status(500).send(err);
                         if (err) throw err;
 

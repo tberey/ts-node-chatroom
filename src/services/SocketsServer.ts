@@ -54,7 +54,7 @@ export class SocketsServer {
             // Create a new user, using stored request session properties.
             const user:IUser = { uniqueID: socket.request.session.uid, name: socket.request.session.username };
 
-            // Add newly connected user to set, and emit to all clients to clear exisiting user list to replace with updated list. Send server update message in chat.
+            // Add newly connected user to set, and emit to all clients to clear existing user list to replace with updated list. Send server update message in chat.
             userSet.add(user);
             let serverMsg = `<p class="message"><b>Server says:</b><br>
                 <i>New messenger arrived, welcome '${user.name}'! 
