@@ -127,9 +127,16 @@ For help or guidance in downloading and running the application, see the followi
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-| Endpoint | Action/Desc. | Full URI <i>(hosted locally, for some port; e.g.: 3000)</i> |
-|:---|:---|:---|
-| <ul><li>"/"</li></ul> | Homepage:<br>The client-side landing page. | <ul><li>"http://localhost:3000/"</li></ul> |
+| Endpoint | Action/Desc. | Full URI <i>(hosted locally, on some port; e.g.: 3000)</i> | Request Type |
+|:---|:---|:---|:---|
+| <ul><li>"/"</li></ul> | Home Page:<br>The client-side landing page. Login or Register. | <ul><li>"http://localhost:3000/"</li></ul> | GET |
+| <ul><li>"/chat"</li></ul> | Chatroom:<br>If logged in, this is the url for the chatroom. if not logged in, redirects to home page. | <ul><li>"http://localhost:3000/chat"</li></ul> | GET |
+| <ul><li>"/login"</li></ul> | Post request to login a user, with supplied credentials. If successful, redirects to chatroom. | <ul><li>"http://localhost:3000/login"</li></ul> | POST |
+| <ul><li>"/register"</li></ul> | Post request to register a user, with supplied credentials. | <ul><li>"http://localhost:3000/register"</li></ul> | POST |
+| <ul><li>"/changeUsername"</li></ul> | Post request to update a logged in user's username. | <ul><li>"http://localhost:3000/changeUsername"</li></ul> | POST |
+| <ul><li>"/logout"</li></ul> | Post request to log out a user and redirect to home page. | <ul><li>"http://localhost:3000/logout"</li></ul> | POST |
+| <ul><li>"/changePassword"</li></ul> | Put request to update a logged in user's password. | <ul><li>"http://localhost:3000/changePassword"</li></ul> | PUT |
+| <ul><li>"/delete"</li></ul> | Delete request to delete and hence log out a user, and redirect to home page. Hard delete of account. | <ul><li>"http://localhost:3000/delete"</li></ul> | DELETE |
 
 <br>
 
@@ -192,6 +199,7 @@ Below is the refined and confirmed roadmap, that has been planned for completion
 |Version 3.0.1 | [2021-07-31] | <ul><li>Updates to session management implementation, plus a new interface.</li><li>Updates to database interactivity and infrastructure, creating new separate class.</li><li>Update README.md</li></ul>|
 |Version 3.0.2 | [2021-08-01] | <ul><li>Differentiate SocketServer further, into it's own service class, rather than a parent class of the server infrastructure.</li><li>Minor updates to Database class and implementation.</li><li>Update README.md</li></ul>|
 |Version 3.0.3 | [2021-08-03] | <ul><li>Fix spelling.</li><li>Update README.md</li></ul>|
+|Version 3.0.3 | [2021-08-04] | <ul><li>Update README.md</li></ul>|
 
 <br><hr><br>
 
