@@ -199,7 +199,7 @@ Below is the refined and confirmed roadmap, that has been planned for completion
 |Version 3.0.1 | [2021-07-31] | <ul><li>Updates to session management implementation, plus a new interface.</li><li>Updates to database interactivity and infrastructure, creating new separate class.</li><li>Update README.md</li></ul>|
 |Version 3.0.2 | [2021-08-01] | <ul><li>Differentiate SocketServer further, into it's own service class, rather than a parent class of the server infrastructure.</li><li>Minor updates to Database class and implementation.</li><li>Update README.md</li></ul>|
 |Version 3.0.3 | [2021-08-03] | <ul><li>Fix spelling.</li><li>Update README.md</li></ul>|
-|Version 3.0.3 | [2021-08-04] | <ul><li>Update README.md</li></ul>|
+|Version 3.0.4 | [2021-08-04] | <ul><li>Update README.md</li></ul>|
 
 <br><hr><br>
 
