@@ -69,14 +69,14 @@
         // Listen for the user list items to be emitted by server on connection, and append to html.
         socket.on('userListItem', (data) => userList.append(data));
 
-        // Listen for delete list signal to clear userl list in the html, in prep for a new list emitted. Append received data to html, and scroll view.
+        // Listen for delete list signal to clear user-list in the html, in prep for a new list emitted. Append received data to html, and scroll view.
         socket.on('deleteList', (data) => {
             userList.html('');
             if (data) chatroom.append(data);
             $('#chatroom').scrollTop($('#chatroom').prop('scrollHeight'));
         });
 
-        // Listen the full message list being retuned. Append any received messages to DOM, and auto-scroll to bottom of element.
+        // Listen the full message list being returned. Append any received messages to DOM, and auto-scroll to bottom of element.
         socket.on('msgSetItem', (data) => {
             chatroom.append(data);
             $("#chatroom").animate({scrollTop:$("#chatroom")[0].scrollHeight}, 80);
