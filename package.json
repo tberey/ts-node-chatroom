@@ -57,7 +57,7 @@
     "express-session": "^1.17.2",
     "mocha": "^8.4.0",
     "mysql": "^2.18.1",
-    "rollbar": "^2.24.0",
+    "rollbar": "^2.26.5",
     "simple-txt-logger": "^1.0.6",
     "socket.io": "^2.3.0",
     "socket.io-client": "^2.3.0"
